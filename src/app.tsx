@@ -1,31 +1,49 @@
-import { type FormEvent, useState } from 'react';
+import { signInWithPopup } from 'firebase/auth';
+import { useState } from 'react';
 import { Button } from './components/ui/button';
-import { Input } from './components/ui/input';
+import { auth, googleAuthProvider } from './config/firebase';
+
+type User = {
+	name: string;
+	email: string;
+	avatarUrl: string;
+};
 
 export function App() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const [user, setUser] = useState<User | null>(null);
 
-	function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
+	async function signInWithGoogle() {
+		try {
+			await signInWithPopup(auth, googleAuthProvider);
 
-		console.log({
-			email,
-			password
-		});
+			setUser({
+				name: auth.currentUser?.displayName ?? '',
+				email: auth.currentUser?.email ?? '',
+				avatarUrl: auth.currentUser?.photoURL ?? ''
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	return (
 		<div className="flex items-center justify-center min-h-screen bg-zinc-950 text-zinc-50">
-			<form onSubmit={handleFormSubmit} className="space-y-4">
-				<div className="space-y-2">
-					<Input type="email" placeholder="E-mail" value={email} onChange={(event) => setEmail(event.target.value)} />
-					<Input type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-				</div>
-				<Button type="submit" variant="secondary" className="w-full cursor-pointer">
-					Submit
-				</Button>
-			</form>
+			<div>
+				{user ? (
+					<div className="flex flex-col items-center justify-center gap-y-4">
+						<img src={user.avatarUrl} alt="User Avatar" className="size-24 rounded-full" />
+
+						<div className="flex flex-col items-center justify-center">
+							<h2 className="font-semibold text-xl">{user.name}</h2>
+							<p className="text-sm text-zinc-400">{user.email}</p>
+						</div>
+					</div>
+				) : (
+					<Button type="button" variant="secondary" onClick={signInWithGoogle} className="cursor-pointer">
+						Google
+					</Button>
+				)}
+			</div>
 		</div>
 	);
 }
