@@ -31,7 +31,7 @@ export function App() {
 			<div>
 				{user ? (
 					<div className="flex flex-col items-center justify-center gap-y-4">
-						<img src={user.avatarUrl} alt="User Avatar" className="size-24 rounded-full" />
+						<img src={user.avatarUrl} alt="User Avatar" className="size-24 rounded-full grayscale-100 cursor-pointer transition hover:grayscale-0" />
 
 						<div className="flex flex-col items-center justify-center">
 							<h2 className="font-semibold text-xl">{user.name}</h2>
